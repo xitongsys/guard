@@ -1,4 +1,4 @@
-import requests, qrcode, time, logging
+import requests, qrcode, time, logging, os, json
 
 def retry(times: int, interval: int):
     def wrapper(func):
@@ -19,11 +19,12 @@ def retry(times: int, interval: int):
 session = requests.Session()
 
 @retry(times = 100, interval = 1)
-def getQrcode(user: str):
+def getQrcode(user: str, path: str):
     qr = session.get('https://login.xuexi.cn/user/qrcode/generate').json()['result']
     url = "https://login.xuexi.cn/login/qrcommit?showmenu=false&code={qr}&appId=dingoankubyrfkttorhpou".format(qr = qr)
     img = qrcode.make(url)
-    img.save(user + ".png")
+    path = os.path.join(path, user + ".png")
+    img.save(path)
     return qr
 
 @retry(times=100, interval=1)
@@ -53,12 +54,25 @@ def getCookies(tmpCode: str):
     return [{'name': c.name, 'value': c.value, 'domain': c.domain, 'path': c.path} for c in cookies]
 
 @retry(times=1, interval=1)
-def login(user: str):
-    qr = getQrcode(user)
+def login(user: str, path: str = "./"):
+    qr = getQrcode(user, path)
     tmpCode = getTmpCode(qr)
     cookies = getCookies(tmpCode)
     return cookies
 
+@retry(times=1, interval=1)
+def updateQrcode(user: str, path: str = "./"):
+    qr = getQrcode(user, path)
+    return qr
+
+@retry(times=1, interval=1)
+def updateCookie(qr: str, path: str='./cookies.json'):
+    tmpCode = getTmpCode(qr)
+    cookies = json.dumps(getCookies(tmpCode))
+    with open(path, 'w+') as f:
+        f.write(cookies)
+    return cookies
+
 if __name__ == '__main__':
-    cookies = login('baba')
+    cookies = login('kk', 'static/')
     print(cookies)

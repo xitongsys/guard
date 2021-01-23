@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
 </head>
 
-<body style='margin: 0px;'>
+<body>
     <div>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <a class="navbar-brand" href="#">Guard</a>
@@ -16,9 +16,6 @@
 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="#">terminal<span class="sr-only">(current)</span></a>
-                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">xuexi</a>
                     </li>
@@ -28,10 +25,56 @@
                 </ul>
             </div>
         </nav>
+
+        <div>
+            {% for it in users %}
+            <div class="card" style="width: 18rem; margin: auto; margin-top: 20px;">
+                <img id='img-{{ it.user }}' src='static/{{ it.user }}.png' class="card-img-top" onclick="reloadQrcode('{{ it.user }}')">
+                <div class="card-body">
+                    {{ it.user }} {{ it.date }}
+                </div>
+                <button type="button" class="btn btn-primary" onclick="updateCookie('{{ it.user }}')">Scan QR & Click</button>
+            </div>
+            {% endfor %}
+        </div>
     </div>
 
     <script src="/static/js/jquery-3.5.1.slim.min.js"></script>
     <script src="/static/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function reloadQrcode(user){
+            var img = document.getElementById('img-' + user);
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function(){
+                if(this.readyState == 4 && this.status == 200){
+                    var qrcode = xhttp.responseText;
+                    img.setAttribute('src', 'static/' + user + ".png?" + new Date().getTime());
+                    img.setAttribute('value', qrcode);
+                }else{
+                    console.log(this.status);
+                }
+            }
+
+            xhttp.open('GET', '/api/xuexi_reloadqrcode/' + user, true);
+            xhttp.send();
+        }
+
+        function updateCookie(user){
+            var img = document.getElementById('img-' + user);
+            var qr = img.getAttribute('value');
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function(){
+                if(this.readyState == 4 && this.status == 200){
+                    alert(user + " login successed!")
+                }else{
+                    console.log(this.status)
+                }
+            }
+
+            xhttp.open('GET', '/api/xuexi_updatecookie/' + user + '/' + qr, true);
+            xhttp.send();
+        }
+    </script>
 </body>
 
 </html>
