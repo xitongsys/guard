@@ -33,7 +33,6 @@
                 <div class="card-body">
                     {{ it.user }} {{ it.date }}
                 </div>
-                <button type="button" class="btn btn-primary" onclick="updateCookie('{{ it.user }}')">Scan QR & Click</button>
             </div>
             {% endfor %}
         </div>
@@ -50,6 +49,9 @@
                     var qrcode = xhttp.responseText;
                     img.setAttribute('src', 'static/' + user + ".png?" + new Date().getTime());
                     img.setAttribute('value', qrcode);
+                    setTimeout(function(){
+                        updateCookie(user);
+		    }, 5000);
                 }else{
                     console.log(this.status);
                 }
@@ -67,7 +69,8 @@
                 if(this.readyState == 4 && this.status == 200){
                     alert(user + " login successed!")
                 }else{
-                    console.log(this.status)
+                    console.log(user + " login failed!");
+		    setTimeout(function(){updateCookie(user)}, 5000);
                 }
             }
 

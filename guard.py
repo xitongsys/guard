@@ -34,4 +34,4 @@ def xuexi_updatecookie(user, qr):
     return xl.updateCookie(qr, os.path.join('static', user + "_cookies.json"));
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=80)

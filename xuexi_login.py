@@ -27,7 +27,7 @@ def getQrcode(user: str, path: str):
     img.save(path)
     return qr
 
-@retry(times=100, interval=1)
+#@retry(times=100, interval=1)
 def getTmpCode(qrcode: str):
     url = 'https://login.xuexi.cn/login/login_with_qr'
     res = session.post(url, data={
@@ -42,7 +42,7 @@ def getTmpCode(qrcode: str):
     tmpCode = data[data.index(key) + len(key):]
     return tmpCode
 
-@retry(times=100, interval=1)
+#@retry(times=100, interval=1)
 def getCookies(tmpCode: str):
     url = 'https://pc-api.xuexi.cn/login/secure_check?code={tmpCode}&state=06d81817e84a430fRn3K4e9Temmx7XsXcJVvnBCy7b8DrBR0vkAIQQtA0wCDp0owW5W1o9XkX7aUUZ16'.format(tmpCode=tmpCode)
     res = session.get(url)
@@ -65,7 +65,7 @@ def updateQrcode(user: str, path: str = "./"):
     qr = getQrcode(user, path)
     return qr
 
-@retry(times=1, interval=1)
+#@retry(times=1, interval=1)
 def updateCookie(qr: str, path: str='./cookies.json'):
     tmpCode = getTmpCode(qr)
     cookies = json.dumps(getCookies(tmpCode))
