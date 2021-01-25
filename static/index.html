@@ -49,9 +49,7 @@
                     var qrcode = xhttp.responseText;
                     img.setAttribute('src', 'static/' + user + ".png?" + new Date().getTime());
                     img.setAttribute('value', qrcode);
-                    setTimeout(function(){
-                        updateCookie(user);
-		    }, 5000);
+		    updateCookie(user);
                 }else{
                     console.log(this.status);
                 }
@@ -66,12 +64,14 @@
             var qr = img.getAttribute('value');
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function(){
-                if(this.readyState == 4 && this.status == 200){
-                    alert(user + " login successed!")
-                }else{
-                    console.log(user + " login failed!");
-		    setTimeout(function(){updateCookie(user)}, 5000);
-                }
+                if(this.readyState == 4){
+			if(this.status == 200){
+			    alert(user + " login successed!")
+			}else{
+			    console.log(user + " login failed!");
+			    setTimeout(function(){updateCookie(user)}, 5000);
+			}
+		}
             }
 
             xhttp.open('GET', '/api/xuexi_updatecookie/' + user + '/' + qr, true);
